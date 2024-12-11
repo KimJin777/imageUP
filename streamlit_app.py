@@ -1,15 +1,31 @@
+import streamlit as st
 from PIL import Image
 
-# 이미지 불러오기
-image_path = 'your_image.jpg'
-image = Image.open(image_path)
+st.title('Image Resizer App')
 
-# 새로운 크기 설정 (예: 가로 2배, 세로 2배)
-new_size = (image.width * 2, image.height * 2)
-resized_image = image.resize(new_size)
+# 이미지 업로드
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
 
-# 이미지 저장
-resized_image.save('resized_image.jpg')
+if uploaded_file is not None:
+    # 이미지 열기
+    image = Image.open(uploaded_file)
 
-# 이미지 표시
-resized_image.show()
+    # 원본 이미지 표시
+    st.image(image, caption='Original Image', use_column_width=True)
+
+    # 크기 조정 비율 입력
+    width_factor = st.slider("Select width resize factor", 1, 4, 2)
+    height_factor = st.slider("Select height resize factor", 1, 4, 2)
+    
+    # 이미지 크기 조정
+    new_size = (image.width * width_factor, image.height * height_factor)
+    resized_image = image.resize(new_size)
+
+    # 크기 조정된 이미지 표시
+    st.image(resized_image, caption='Resized Image', use_column_width=True)
+
+    # 이미지 저장
+    st.download_button(label="Download resized image",
+                       data=resized_image.tobytes(),
+                       file_name="resized_image.jpg",
+                       mime="image/jpeg")
